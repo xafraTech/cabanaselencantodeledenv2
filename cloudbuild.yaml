@@ -36,9 +36,6 @@ steps:
     args:
       - '-c'
       - |
-        # Autenticar con la cuenta de servicio correcta
-        gcloud auth activate-service-account --key-file=/dev/null
-        gcloud config set account ${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com
         gcloud config set run/region us-central1
         
         # Desplegar el servicio
@@ -64,7 +61,8 @@ steps:
       - '-c'
       - |
         echo "🏔️ ¡Cabañas el Encanto del Edén desplegado con éxito!"
-
+        SERVICE_URL=$(gcloud run services describe cabanas-eden-website --region=us-central1 --format="value(status.url)")
+        echo "🌐 Tu sitio web está disponible en: $SERVICE_URL"
         echo "📱 Comparte esta URL con tus clientes"
         echo "⏱️ Deploy completado en: $(date)"
     id: 'show-success'
