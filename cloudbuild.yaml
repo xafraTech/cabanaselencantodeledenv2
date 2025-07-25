@@ -36,9 +36,12 @@ steps:
     args:
       - '-c'
       - |
+        # Configurar región por defecto
+        gcloud config set run/region us-central1
+        
+        # Desplegar el servicio
         gcloud run deploy cabanas-eden-website \
           --image=us-central1-docker.pkg.dev/$PROJECT_ID/cabanas-eden/website:$BUILD_ID \
-          --region=us-central1 \
           --platform=managed \
           --allow-unauthenticated \
           --port=8080 \
@@ -59,6 +62,8 @@ steps:
       - '-c'
       - |
         echo "🏔️ ¡Cabañas el Encanto del Edén desplegado con éxito!"
+        SERVICE_URL=$(gcloud run services describe cabanas-eden-website --region=us-central1 --format="value(status.url)")
+        echo "🌐 Tu sitio web está disponible en: $SERVICE_URL"
         echo "📱 Comparte esta URL con tus clientes"
         echo "⏱️ Deploy completado en: $(date)"
     id: 'show-success'
