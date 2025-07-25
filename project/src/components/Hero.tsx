@@ -40,6 +40,9 @@ const Hero = () => {
         <h2 className="text-xl md:text-2xl font-light mb-8 opacity-90 animate-slide-up" style={{ animationDelay: '0.2s' }}>
           3 km desde Sasaíma, Cundinamarca
         </h2>
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-wide animate-slide-up">
+          Cabañas el Encanto del Edén - ACTUALIZADO
+        </h1>
         
         <p className="text-xl md:text-2xl mb-12 leading-relaxed max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.4s' }}>
           Descubre un paraíso natural en el corazón de Cundinamarca. 
