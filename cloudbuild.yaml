@@ -1,4 +1,5 @@
-
+# Cloud Build para desplegar directamente a Cloud Run
+# Cabañas el Encanto del Edén - Solo Producción
 
 steps:
   # Paso 1: Instalar dependencias
@@ -7,7 +8,7 @@ steps:
     args: ['ci']
     id: 'install-deps'
 
-  # Paso 2: Construir la imagen Docker 
+  # Paso 2: Construir la imagen Docker (sin linting para deploy más rápido)
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
@@ -31,22 +32,23 @@ steps:
 
   # Paso 4: Desplegar a Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:latest'
-    entrypoint: 'gcloud'
-    args: [
-      'run', 'deploy', 'cabanas-eden-website',
-      '--image', 'gcr.io/$PROJECT_ID/cabanas-eden:$BUILD_ID',
-      '--region', 'us-central1',
-      '--platform', 'managed',
-      '--allow-unauthenticated',
-      '--port', '8080',
-      '--memory', '512Mi',
-      '--cpu', '1',
-      '--min-instances', '0',
-      '--max-instances', '10',
-      '--set-env-vars', 'NODE_ENV=production,VITE_WHATSAPP_NUMBER=573209063849,VITE_EMAIL=reservascabanaseleden@gmail.com',
-      '--timeout', '300',
-      '--quiet'
-    ]
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy cabanas-eden-website \
+          --image=us-central1-docker.pkg.dev/$PROJECT_ID/cabanas-eden/website:$BUILD_ID \
+          --region=us-central1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --port=8080 \
+          --memory=512Mi \
+          --cpu=1 \
+          --min-instances=0 \
+          --max-instances=10 \
+          --set-env-vars="NODE_ENV=production,VITE_WHATSAPP_NUMBER=573209063849,VITE_EMAIL=reservascabanaseleden@gmail.com" \
+          --timeout=300 \
+          --quiet
     id: 'deploy-cloudrun'
     waitFor: ['push-image']
 
@@ -57,6 +59,8 @@ steps:
       - '-c'
       - |
         echo "🏔️ ¡Cabañas el Encanto del Edén desplegado con éxito!"
+        SERVICE_URL=$(gcloud run services describe cabanas-eden-website --region=us-central1 --format="value(status.url)")
+        echo "🌐 Tu sitio web está disponible en: $SERVICE_URL"
         echo "📱 Comparte esta URL con tus clientes"
         echo "⏱️ Deploy completado en: $(date)"
     id: 'show-success'
@@ -77,5 +81,5 @@ tags:
   - 'production'
 
 images:
-  - 'gcr.io/$PROJECT_ID/cabanas-eden:$BUILD_ID'
-  - 'gcr.io/$PROJECT_ID/cabanas-eden:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cabanas-eden/website:$BUILD_ID'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/cabanas-eden/website:latest'
