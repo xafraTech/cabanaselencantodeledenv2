@@ -61,7 +61,6 @@ steps:
       - '-c'
       - |
         echo "🏔️ ¡Cabañas el Encanto del Edén desplegado con éxito!"
-        echo "📱 Comparte esta URL con tus clientes"
         echo "⏱️ Deploy completado en: $(date)"
     id: 'show-success'
     waitFor: ['deploy-cloudrun']
